@@ -1,27 +1,49 @@
 # PropertyScraper
-**PropertyScraper** is a web-scraping tool to easily gather information on publicly available housing feeds, specifically Craigslist.
 
-## Tech Stack
-This project is primarily made with Python, utilizing the BeautifulSoup library to scrape information on websites. The project works with SQLite as a connected database.
+PropertyScraper is a local Flask app for comparing rental listings. Paste Craigslist
+listing URLs, scrape the important details, save them to SQLite, filter/sort the
+table, and export results to CSV or Excel.
 
-## Project Inspiration
+## Features
 
-This project was inspired by my own housing search trouble. The point and goal of the project is to create a tool that will easily gather housing information to easily compare and extract to different file types including CSV, Excel, SQL, which works well for readability within group housing search.
+- Paste one or more individual Craigslist listing URLs
+- Normalize title, price, beds, baths, square footage, address, posted date, and
+  optional distance from a configured destination
+- Save listings with SQLite upserts so repeated scrapes refresh existing rows
+- Filter and sort saved listings in the browser
+- Export saved listings as CSV or XLSX
+- Test parsing with local HTML fixtures instead of live web requests
 
-## Project Status and Goals
+## Setup
 
-This project is current a work in progress. Current goals include: 
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-- SQL Compatibility
-- Support for other popular housing feeds
-- GUI or UI
-- Visualization
-- Automation
-- Follow-up project (ML, Analytics, etc.)
+## Run
 
-## How to Use:
+```powershell
+flask --app app run --debug
+```
 
-WIP
+Then open http://127.0.0.1:5000.
 
+## Configuration
+
+Distance calculation is optional in the UI. It defaults to coordinates near Santa
+Cruz:
+
+```powershell
+$env:PROPERTY_DEST_LAT="36.991"
+$env:PROPERTY_DEST_LNG="-122.060"
+```
+
+## Test
+
+```powershell
+pytest
+```
 
 
