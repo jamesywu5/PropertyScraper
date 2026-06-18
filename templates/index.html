@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PropertyScraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="masthead">
+        <div>
+          <p class="eyebrow">Local rental comparison</p>
+          <h1>PropertyScraper</h1>
+          <p class="lede">
+            Paste Craigslist listing URLs, normalize the details, and compare saved rentals without living in browser tabs.
+          </p>
+        </div>
+        <div class="actions">
+          <a class="button secondary" href="{{ url_for('export_csv') }}">Export CSV</a>
+          <a class="button secondary" href="{{ url_for('export_xlsx') }}">Export Excel</a>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form class="scrape-panel" action="{{ url_for('scrape') }}" method="post">
+          <label for="urls">Listing URLs</label>
+          <textarea id="urls" name="urls" rows="8" placeholder="https://sfbay.craigslist.org/scz/apa/d/..."></textarea>
+          <div class="form-row">
+            <label class="check">
+              <input type="checkbox" name="include_distance">
+              Include distance from configured destination
+            </label>
+            <button class="button primary" type="submit">Scrape Listings</button>
+          </div>
+        </form>
+
+        <aside class="status-panel">
+          <h2>Run Status</h2>
+          {% if messages %}
+            <ul class="messages">
+              {% for message in messages %}
+                <li class="{{ message.status }}">{{ message.text }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="empty">Ready for listing URLs.</p>
+          {% endif %}
+        </aside>
+      </section>
+
+      <section class="listings-panel">
+        <div class="table-toolbar">
+          <div>
+            <h2>Saved Listings</h2>
+            <p>{{ listings|length }} listing{{ '' if listings|length == 1 else 's' }} saved</p>
+          </div>
+          <input id="listingFilter" type="search" placeholder="Filter listings">
+        </div>
+
+        <div class="table-wrap">
+          <table id="listingsTable">
+            <thead>
+              <tr>
+                <th data-type="text">Title</th>
+                <th data-type="number">Price</th>
+                <th data-type="number">Beds</th>
+                <th data-type="number">Baths</th>
+                <th data-type="number">Sqft</th>
+                <th data-type="number">Miles</th>
+                <th data-type="text">Posted</th>
+                <th data-type="text">Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for listing in listings %}
+                <tr>
+                  <td>
+                    <a href="{{ listing.url }}" target="_blank" rel="noreferrer">
+                      {{ listing.title or 'Untitled listing' }}
+                    </a>
+                  </td>
+                  <td data-value="{{ listing.price or '' }}">
+                    {{ '${:,.0f}'.format(listing.price) if listing.price else '—' }}
+                  </td>
+                  <td data-value="{{ listing.beds or '' }}">{{ listing.beds or '—' }}</td>
+                  <td data-value="{{ listing.baths or '' }}">{{ listing.baths or '—' }}</td>
+                  <td data-value="{{ listing.sqft or '' }}">
+                    {{ '{:,.0f}'.format(listing.sqft) if listing.sqft else '—' }}
+                  </td>
+                  <td data-value="{{ listing.distance_miles or '' }}">
+                    {{ listing.distance_miles or '—' }}
+                  </td>
+                  <td>{{ listing.posted or '—' }}</td>
+                  <td>{{ listing.address or '—' }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td class="empty-table" colspan="8">No listings saved yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
